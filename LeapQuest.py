@@ -43,16 +43,11 @@ attack_animation_time = 0 #will increase this until it reaches atk duration
 attack_range = 200
 attack_duration = 20  
 
+#Score and Coins and Health
 score = 0
-
-scored_chunks = set()  # To track which chunks have been scored 
-
+scored_chunks = []  # To track which chunks have been scored 
 coin = 0
-
-
 health = 100
-
-scored_enemies = set()  # To track which enemies have been scored
 
 def initialize_chunks():  #This func is called at the very begining in the main loop
     global chunks
@@ -84,14 +79,14 @@ def create_obstacles_for_chunk(chunk_y): # chunk_y=start y coord of chunk .Creat
 
         obstacle_type_rand = random.choice(["wall", "enemy", "coin"])
 
-        if obstacle_type_rand == "wall":  # 50% chance for wall
+        if obstacle_type_rand == "wall": 
             obstacle_type = "wall"
             obstacle_y = chunk_y + random.randint(100, chunk_size - 100)# Placing within chunk length
             obstacle_x = random.randint(-400, 400)#spawn point
             obstacle_height = random.randint(jump_height-200, jump_height-100)
             obstacle_width = random.randint(200, 800)#Horizontal length
 
-        elif obstacle_type_rand == "enemy":  # 50% chance for enemy
+        elif obstacle_type_rand == "enemy":
             obstacle_type = "enemy"
             obstacle_y = chunk_y + random.randint(100, chunk_size - 100)
             obstacle_x = random.randint(-400, 400)
@@ -99,7 +94,6 @@ def create_obstacles_for_chunk(chunk_y): # chunk_y=start y coord of chunk .Creat
             obstacle_width = 50  
 
         elif obstacle_type_rand== "coin":
-            # Coins are smaller, floating above ground
             obstacle_type = "coin"
             obstacle_y = chunk_y + random.randint(100, chunk_size - 100)
             obstacle_x = random.randint(-400, 400)
@@ -153,8 +147,8 @@ def draw_obstacles():  # Runs inside showscreen
             glPushMatrix()
             glTranslatef(obstacle["x"], obstacle["y"], 0)
             
-            # Draw solid wall first (no transparency)
-            glColor3f(0.8, 0.2, 0.2)  # Solid red color for main wall
+            # 
+            glColor3f(0.8, 0.2, 0.2)  #  red 
             
             glBegin(GL_QUADS)
             # Front face
@@ -188,11 +182,11 @@ def draw_obstacles():  # Runs inside showscreen
             glVertex3f(-obstacle["width"]/2, 0, obstacle["height"])
             glEnd()
             
-            # Draw border around the wall
-            glColor3f(0.0, 0.0, 0.0)  # Black color for border
-            glLineWidth(3.0)  # Thicker lines for border
+            #  border 
+            glColor3f(0.0, 0.0, 0.0)  
+            glLineWidth(3.0)  
             
-            # Front border - using individual line segments
+            # Front border 
             glBegin(GL_LINES)
             glVertex3f(-obstacle["width"]/2, 0, 0)
             glVertex3f(obstacle["width"]/2, 0, 0)
@@ -207,7 +201,7 @@ def draw_obstacles():  # Runs inside showscreen
             glVertex3f(-obstacle["width"]/2, 0, 0)
             glEnd()
             
-            # Back border - using individual line segments
+            # Back border 
             glBegin(GL_LINES)
             glVertex3f(-obstacle["width"]/2, -10, 0)
             glVertex3f(obstacle["width"]/2, -10, 0)
@@ -222,7 +216,7 @@ def draw_obstacles():  # Runs inside showscreen
             glVertex3f(-obstacle["width"]/2, -10, 0)
             glEnd()
             
-            # Top border - using individual line segments
+            # Top border 
             glBegin(GL_LINES)
             glVertex3f(-obstacle["width"]/2, 0, obstacle["height"])
             glVertex3f(obstacle["width"]/2, 0, obstacle["height"])
@@ -237,7 +231,7 @@ def draw_obstacles():  # Runs inside showscreen
             glVertex3f(-obstacle["width"]/2, 0, obstacle["height"])
             glEnd()
             
-            # Right border - using individual line segments
+            # Right border 
             glBegin(GL_LINES)
             glVertex3f(obstacle["width"]/2, 0, 0)
             glVertex3f(obstacle["width"]/2, -10, 0)
@@ -252,7 +246,7 @@ def draw_obstacles():  # Runs inside showscreen
             glVertex3f(obstacle["width"]/2, 0, 0)
             glEnd()
             
-            # Left border - using individual line segments
+            # Left border 
             glBegin(GL_LINES)
             glVertex3f(-obstacle["width"]/2, 0, 0)
             glVertex3f(-obstacle["width"]/2, -10, 0)
@@ -267,15 +261,15 @@ def draw_obstacles():  # Runs inside showscreen
             glVertex3f(-obstacle["width"]/2, 0, 0)
             glEnd()
             
-            glLineWidth(1.0)  # Reset line width to default
+            glLineWidth(1.0)  
             glPopMatrix()
 #***************************************************************************************************
         elif obstacle["type"] == "enemy":
             glPushMatrix()
             glTranslatef(obstacle["x"], obstacle["y"], 0)
             
-            # Draw black border first (slightly larger than main body)
-            glColor3f(0.0, 0.0, 0.0)  # Black border
+            # Draw black border first
+            glColor3f(0.0, 0.0, 0.0)
             glLineWidth(2.0)
             
             # Border for head
@@ -303,7 +297,7 @@ def draw_obstacles():  # Runs inside showscreen
             glutSolidSphere(obstacle["width"]/4 + 1, 15, 15)
             glPopMatrix()
             
-            # Main ghost body
+            # Main body
             glColor3f(0.6, 0.2, 0.8)  # Purple color
             
             # Head (sphere)
@@ -331,7 +325,7 @@ def draw_obstacles():  # Runs inside showscreen
             glutSolidSphere(obstacle["width"]/4, 15, 15)
             glPopMatrix()
             
-            # Ghost eyes (white with black pupils)
+            # eyes
             glColor3f(1.0, 1.0, 1.0)  # White eyes
             
             # Left eye
@@ -364,11 +358,10 @@ def draw_obstacles():  # Runs inside showscreen
         elif obstacle["type"] == "coin" and not obstacle.get("collected", False): # Only draw if not collected
             glPushMatrix()
             glTranslatef(obstacle["x"], obstacle["y"], obstacle["height"])
-            glColor3f(1.0, 0.84, 0.0)  # shiny gold
+            glColor3f(1.0, 0.84, 0.0)  #  gold
 
-            # Make the coin flatter (like a disc) instead of a ball
             glPushMatrix()
-            glScalef(1.0, 0.2, 1.0)  # squash sphere into a flat coin
+            glScalef(1.0, 0.2, 1.0)  
             glutSolidSphere(obstacle["width"], 30, 30)
             glPopMatrix()
 
@@ -387,10 +380,8 @@ def draw_attack(): # ran in showscreen
     glPushMatrix()
     glTranslatef(player_x_position, player_y_position, player_z_position + 30)
     
-    # Draw a circular attack effect using quads
     glColor3f(1.0, 1.0, 0.0)  # Solid yellow color
     
-    # Draw the attack as a series of quads forming a circle
     num_segments = 36
     for i in range(num_segments):
         angle1 = i * 10 * math.pi / 180
@@ -401,19 +392,16 @@ def draw_attack(): # ran in showscreen
         x2 = math.cos(angle2) * attack_size
         y2 = math.sin(angle2) * attack_size
         
-        # Draw a quad segment (triangle would work too)
         glBegin(GL_QUADS)
         glVertex3f(0, 0, 0)  # Center point
         glVertex3f(x1, y1, 0)
         glVertex3f(x2, y2, 0)
-        glVertex3f(0, 0, 0)  # Back to center to complete the quad
+        glVertex3f(0, 0, 0)  
         glEnd()
     
-    # Draw border using individual line segments instead of LINE_LOOP
     glColor3f(1.0, 0.5, 0.0)  # Orange border
     glLineWidth(2.0)
     
-    # Draw the border as individual line segments
     for i in range(num_segments):
         angle1 = i * 10 * math.pi / 180
         angle2 = (i + 1) * 10 * math.pi / 180
@@ -431,7 +419,6 @@ def draw_attack(): # ran in showscreen
     glLineWidth(1.0)
     
     glPopMatrix()     
-
 
 
 def check_collisions(): #Runs in idle 
@@ -457,50 +444,32 @@ def check_collisions(): #Runs in idle
 
             print(f"Health: {health}")
             obstacles.remove(obstacle)
-
             
             # Enemy collision detected
-            #make a global health variable. oita theke minus korba and print that on screen
             if health <= 0:
                 print("Game Over!")
                 reset_game()
             break
 
         elif obstacle["type"] == "coin" and not obstacle.get("collected", False) and \
-            abs(player_x_position - obstacle["x"]) < (player_size + obstacle["width"]/2) and \
-            abs(player_y_position - obstacle["y"]) < (player_size + 10) and \
-            abs(player_z_position - obstacle["height"]) < (player_size + obstacle["height"]):
-            
+            abs(player_x_position - obstacle["x"]) < 50 and \
+            abs(player_y_position - obstacle["y"]) < 50 and \
+            player_z_position < 50:  
             # Coin collection detected
             obstacle["collected"] = True
             coin += 10  # Add points for collecting a coin
             print(f"Coin collected!: {coin}")
 
-
-
 def update_score():
-    global score, chunks, player_y_position, scored_chunks, scored_ememies,  obstacles
+    global score, chunks, player_y_position, scored_chunks, obstacles
     
-    # Check if player has crossed a chunk boundary (wall position)
+    # Check if player has crossed a chunk boundary
     for chunk_y in chunks:
-        # If player has just passed a chunk boundary and it hasn't been scored yet
-        if (player_y_position > chunk_y + chunk_size/2 and 
-            chunk_y not in scored_chunks and 
-            chunk_y > 0):  # Don't score the initial chunk
-            
-            scored_chunks.add(chunk_y)
-            score += 20
-            print(f"Wall crossed! Score: {score}")
-    
-    # Check if player has passed any enemies
-    for obstacle in obstacles:
-        if (obstacle["type"] == "enemy" and 
-            player_y_position > obstacle["y"] and  # Player has passed the enemy
-            id(obstacle) not in scored_enemies):  # This enemy hasn't been scored yet
-            
-            scored_enemies.add(id(obstacle))
-            score += 50
-            print(f"Enemy avoided! +50 points! Score: {score}")
+        # If player has just passed the END of a chunk boundary and it hasn't been scored yet
+        if (player_y_position > chunk_y + chunk_size and chunk_y not in scored_chunks):    
+            scored_chunks.append(chunk_y) #ensures each chunk is counted only once
+            score += 25
+            print(f"Chunk completed! +25 points! Score: {score}")
 
 #============================================================
 
@@ -516,10 +485,8 @@ def keyboardListener(key, x, y):
     if key == b'a':
         player_x_position -= x_movement_speed
 
-
     if key == b'd':
         player_x_position += x_movement_speed
-
 
     if key == b' ' and not is_jumping:
         is_jumping = True
@@ -530,26 +497,8 @@ def keyboardListener(key, x, y):
         reset_game()
 
 
-def specialKeyListener(key, x, y):
-    pass
-
-
-    # Move camera up (UP arrow key)
-    # if key == GLUT_KEY_UP:
-
-    # # Move camera down (DOWN arrow key)
-    # if key == GLUT_KEY_DOWN:
-
-    # moving camera left (LEFT arrow key)
-    #if key == GLUT_KEY_LEFT:
-       # x -= 1  # Small angle decrement for smooth movement
-
-    # moving camera right (RIGHT arrow key)
-    #if key == GLUT_KEY_RIGHT:
-       # x += 1  # Small angle increment for smooth movement
-
 def reset_game():
-    global player_y_position, player_x_position, player_z_position, is_jumping, current_jump_height, player_speed,chunks, obstacles, score , coin , scored_chunks, health , scored_ememies
+    global player_y_position, player_x_position, player_z_position, is_jumping, current_jump_height, player_speed,chunks, obstacles, score , coin , scored_chunks, health
     
     # Resetting variables
     player_y_position = 0
@@ -558,15 +507,12 @@ def reset_game():
     is_jumping = False
     current_jump_height = 0
     player_speed = min_speed
+
     score = 0
-
     coin = 0
-
     health = 100
 
-    scored_chunks = set()  #reseting scored chunks
-
-    scored_ememies = set()  #reseting scored enemies    
+    scored_chunks = []  #reseting scored chunks  
     
     # Clearing chunks and obstacles
     chunks.clear()
@@ -578,7 +524,7 @@ def reset_game():
         create_obstacles_for_chunk(chunk_y)
 
 def check_attack_hit():
-    global obstacles
+    global obstacles, score
     
     new_obstacles = [] # For obstacles that aren't hit, includes walls by default
     
@@ -589,8 +535,9 @@ def check_attack_hit():
             dist_y = abs(player_y_position - i["y"])
             
             # attack range check
-            if dist_x < attack_range and dist_y < attack_range:
-                # enemy hit hole restart loo[. This Enemy hit hole append kortesina
+            if dist_x < attack_range and dist_y < attack_range: #attack hit hoise
+                score+=200
+                # enemy hit hole restart loop. This Enemy hit hole append kortesina
                 continue
                 
         # Unhit obsticles append kore dichi
@@ -621,7 +568,7 @@ def setupCamera(): #This func is ran inside showScreen
     camera_distance = 200  #cam dist behind player
     camera_height = 200 #  camera jumps too==> + player_z_position   #cam height above player
     gluLookAt(player_x_position, player_y_position - camera_distance, camera_height,  #camera pos
-              player_x_position, player_y_position + 500, 0,  #camera will look at this cord (it will look 500 pixels in front of the player)
+              player_x_position, player_y_position + 500, 0,  #camera will look at this cord 
               0, 0, 1)        # Up vector (z-axis)
 
 
@@ -673,52 +620,51 @@ def draw_player():
     leg_swing = math.sin(animation_time) * 15  # Front-back leg movement
     arm_swing = math.sin(animation_time + math.pi) * 20  # Opposite of legs
     
-    # Additional subtle movements for more realism
     body_bob = math.sin(animation_time * 2) * 3  
     leg_lift = abs(math.sin(animation_time)) * 5 
     
-    # Apply body bobbing
+    # bobbing effect
     glTranslatef(0, 0, body_bob)
 
-    # Minecraft Steve body parts (cube-based)
+    # Minecraft Steve
     glColor3f(0.0, 0.0, 1.0)  # Blue shirt
    
-    # Body (main cube) - slightly bobs up and down
+    # Body
     glPushMatrix()
     glTranslatef(0, 0, 15)
     glScalef(20, 10, 30)
     glutSolidCube(1)
     glPopMatrix()
    
-    # Head (cube) - moves with body bob
-    glColor3f(0.8, 0.6, 0.4)  # Skin tone for head
+    # Head (cube)
+    glColor3f(0.8, 0.6, 0.4)  # skin color
     glPushMatrix()
     glTranslatef(0, 0, 45 + body_bob/2)
     glScalef(20, 20, 20)
     glutSolidCube(1)
     glPopMatrix()
 
-    # Hair (brown quad on top of head)
-    glColor3f(0.2, 0.2, 0.2)  # Dark brown color
+    # Hair
+    glColor3f(0.2, 0.2, 0.2)  # brown color
     glPushMatrix()
-    glTranslatef(0, 0, 55 + body_bob/2)  # Position on top of head
-    glScalef(22, 22, 5)  # Slightly larger than head but flat
+    glTranslatef(0, 0, 55 + body_bob/2) 
+    glScalef(22, 22, 5) 
     glutSolidCube(1)
     glPopMatrix()
    
-    # Arms - more dynamic movement with rotation
+    # Arms
     glColor3f(0.6, 0.4, 0.2)  # Brown arms
     
-    # Right arm - swings forward and back with rotation
+    # Right arm - swings rotationally
     glPushMatrix()
     glTranslatef(15, 0, 15)
-    glRotatef(arm_swing, 1, 0, 0)  # Rotate arm forward/back
-    glTranslatef(0, 0, arm_swing/3)  # Additional forward/back movement
+    glRotatef(arm_swing, 1, 0, 0)  # Rotate arm
+    glTranslatef(0, 0, arm_swing/3)  # Additional movement
     glScalef(8, 8, 30)
     glutSolidCube(1)
     glPopMatrix()
    
-    # Left arm - opposite movement from right arm
+    # Left arm - opposite of right
     glPushMatrix()
     glTranslatef(-15, 0, 15)
     glRotatef(-arm_swing, 1, 0, 0)  # Opposite rotation
@@ -727,10 +673,10 @@ def draw_player():
     glutSolidCube(1)
     glPopMatrix()
    
-    # Legs - more dynamic movement with lifting effect
-    glColor3f(0.3, 0.2, 0.1)  # Dark brown pants
+    # Legs
+    glColor3f(0.3, 0.2, 0.1)  # Brown pants
     
-    # Right leg - swings with lifting effect
+    # Right leg + swing
     glPushMatrix()
     glTranslatef(7, 0, -15)
     if leg_swing > 0:  # Only lift when swinging forward
@@ -740,7 +686,7 @@ def draw_player():
     glutSolidCube(1)
     glPopMatrix()
    
-    # Left leg - opposite movement from right leg
+    # Left leg + swing
     glPushMatrix()
     glTranslatef(-7, 0, -15)
     if leg_swing < 0:  # Only lift when swinging forward
@@ -750,20 +696,6 @@ def draw_player():
     glutSolidCube(1)
     glPopMatrix()
 
-
-# def draw_platform_pattern(chunk_start, chunk_end):
-#     pattern_spacing = 50  # Space between pattern lines
-#     pattern_width = 10    # Width of each pattern line
-   
-#     glColor3f(0.7, 0.7, 0.7)  # Light gray pattern
-   
-#     for y in range(chunk_start, chunk_end, pattern_spacing): #y is the starting coord of pattern quad at every iteration
-#         glBegin(GL_QUADS)
-#         glVertex3f(-500, y, 0.1)
-#         glVertex3f(-500, y + pattern_width, 0.1)
-#         glVertex3f(500, y + pattern_width, 0.1)
-#         glVertex3f(500, y, 0.1)
-#         glEnd()
 
 
 def draw_platform(): #This func is being ran inside showScreen
@@ -783,16 +715,13 @@ def draw_platform(): #This func is being ran inside showScreen
         glEnd()
 
 
-        #draw_platform_pattern(chunk_start, chunk_start + chunk_size)
-
-
 
 def render_text(x, y, text, font=GLUT_BITMAP_HELVETICA_18, color=(1.0, 1.0, 1.0)):
-    # Save current matrices
     glMatrixMode(GL_PROJECTION)
     glPushMatrix()
     glLoadIdentity()
-    gluOrtho2D(0, 1600, 0, 900)  # Match your window size
+    
+    gluOrtho2D(0, 1600, 900, 0)#2D board same as 3D board
     
     glMatrixMode(GL_MODELVIEW)
     glPushMatrix()
@@ -803,39 +732,44 @@ def render_text(x, y, text, font=GLUT_BITMAP_HELVETICA_18, color=(1.0, 1.0, 1.0)
     for character in text:
         glutBitmapCharacter(font, ord(character))
     
-    # Restore matrices
     glPopMatrix()
     glMatrixMode(GL_PROJECTION)
     glPopMatrix()
     glMatrixMode(GL_MODELVIEW)
 
 def draw_coin_icon(x, y, size=15):
-    # Save current matrices
     glMatrixMode(GL_PROJECTION)
     glPushMatrix()
     glLoadIdentity()
-    gluOrtho2D(0, 1600, 0, 900)
+    
+    gluOrtho2D(0, 1600, 900, 0)  # left, right, bottom, top (flipped Y)
     
     glMatrixMode(GL_MODELVIEW)
     glPushMatrix()
     glLoadIdentity()
-    
-    glColor3f(1.0, 0.84, 0.0)  # Gold color
-    glBegin(GL_QUADS)
-    glVertex2f(x, y)
-    glVertex2f(x + size, y)
-    glVertex2f(x + size, y + size)
-    glVertex2f(x, y + size)
-    glEnd()
-    
-    # Restore matrices
+
+    glColor3f(1.0, 0.84, 0.0)  # Gold color    
+    num_segments = 20
+    center_x = x + size/2
+    center_y = y + size/2
+    for i in range(num_segments):
+        angle1 = i * 2.0 * math.pi / num_segments
+        angle2 = (i + 1) * 2.0 * math.pi / num_segments
+        
+        x1 = center_x + math.cos(angle1) * size/2
+        y1 = center_y + math.sin(angle1) * size/2
+        x2 = center_x + math.cos(angle2) * size/2
+        y2 = center_y + math.sin(angle2) * size/2
+        
+        glBegin(GL_TRIANGLES)
+        glVertex2f(center_x, center_y)
+        glVertex2f(x1, y1)
+        glVertex2f(x2, y2)
+        glEnd()
     glPopMatrix()
     glMatrixMode(GL_PROJECTION)
     glPopMatrix()
     glMatrixMode(GL_MODELVIEW)
-
-
-
 
 def showScreen():
     # Clear color and depth buffers
@@ -849,20 +783,15 @@ def showScreen():
     draw_obstacles()
     draw_attack()
 
-    # Origin line (Z-axis)
-    glBegin(GL_LINES)
-    glColor3f(1, 0, 0)  # Red color
-    glVertex3f(0, player_y_position, 100)  #new: Position relative to player
-    glVertex3f(0, player_y_position, -100)  #new: Position relative to player
-    glEnd()
-
-    glPushMatrix()  # Save current transformation matrix    
+    glPushMatrix()    
     draw_player()
-    glPopMatrix()   # Restore transformation matrix
+    glPopMatrix()   
 
-    # Display coin count in top LEFT corner (simpler version without background)
+    # Display Info 
     draw_coin_icon(20, 850)
-    render_text(50, 850, f"Coins: {coin}")
+    render_text(50, 864, f"Coins: {coin}")
+    render_text(50,840,f"Score: {score}")
+    render_text(50,815,f"Health {health}")
 
     glutSwapBuffers()
 
@@ -872,13 +801,12 @@ def main():
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)  # Double buffering, RGB color, depth test
     glutInitWindowSize(1600, 900)  # Window size
     glutInitWindowPosition(0, 0)  # Window position
-    wind = glutCreateWindow(b"JumpQuest")  # Create the window
+    wind = glutCreateWindow(b"LeapQuest")  # Create the window
 
     initialize_chunks()  #Initialized first because the lvl needs to generate
 
     glutDisplayFunc(showScreen)  
     glutKeyboardFunc(keyboardListener)  
-    glutSpecialFunc(specialKeyListener)
     glutMouseFunc(mouseListener)
     glutIdleFunc(idle)  # This func is being called repeatedly
 
