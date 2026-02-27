@@ -597,6 +597,10 @@ def idle(): #This func is being called as idle func from the main loop
         if current_jump_height < jump_height:#rising until reaching jump_height
             player_z_position += jump_speed #rising
             current_jump_height += jump_speed #storing the rise
+
+        if current_jump_height < jump_height:#rising until reaching jump_height
+            player_z_position += jump_speed #rising
+            current_jump_height += jump_speed #storing the rise
         else: #Fall when jump_height reached
             player_z_position -= gravity #falling
            
