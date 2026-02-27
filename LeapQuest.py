@@ -760,6 +760,12 @@ def draw_coin_icon(x, y, size=15):
         y1 = center_y + math.sin(angle1) * size/2
         x2 = center_x + math.cos(angle2) * size/2
         y2 = center_y + math.sin(angle2) * size/2
+
+
+        x1 = center_x + math.cos(angle1) * size/2
+        y1 = center_y + math.sin(angle1) * size/2
+        x2 = center_x + math.cos(angle2) * size/2
+        y2 = center_y + math.sin(angle2) * size/2
         
         glBegin(GL_TRIANGLES)
         glVertex2f(center_x, center_y)
@@ -814,3 +820,8 @@ def main():
 
 if __name__ == "__main__":
     main()  
+
+
+
+
+
