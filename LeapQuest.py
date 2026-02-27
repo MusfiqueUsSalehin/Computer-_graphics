@@ -479,6 +479,9 @@ def keyboardListener(key, x, y):
     if key == b'w':
         player_speed = min(max_speed, player_speed + 0.05)
 
+    if key == b'w':
+        player_speed = min(max_speed, player_speed + 0.05)
+
     if key == b's':
         player_speed = max(min_speed, player_speed - 0.05)
 
